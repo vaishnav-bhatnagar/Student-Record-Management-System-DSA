@@ -31,92 +31,137 @@ void banner()
 void clearBuffer()
 {
     int c;
-    while((c=getchar())!='\n' && c!=EOF);
+
+    while((c = getchar()) != '\n' && c != EOF);
+}
+
+void pauseScreen()
+{
+    printf("\nPress Enter to continue...");
+    clearBuffer();
+    getchar();
 }
 
 int rollExists(char roll[])
 {
-    Student *t=head;
-    while(t)
+    Student *temp = head;
+
+    while(temp != NULL)
     {
-        if(strcmp(t->roll,roll)==0) return 1;
-        t=t->next;
+        if(strcmp(temp->roll, roll) == 0)
+            return 1;
+
+        temp = temp->next;
     }
+
     return 0;
 }
 
 int erpExists(char erp[])
 {
-    Student *t=head;
-    while(t)
+    Student *temp = head;
+
+    while(temp != NULL)
     {
-        if(strcmp(t->erp,erp)==0) return 1;
-        t=t->next;
+        if(strcmp(temp->erp, erp) == 0)
+            return 1;
+
+        temp = temp->next;
     }
+
     return 0;
 }
 
 void saveToFile()
 {
-    if(head==NULL)
+    if(head == NULL)
     {
         remove(FILE_NAME);
         return;
     }
 
-    FILE *fp=fopen(FILE_NAME,"w");
-    if(!fp) return;
+    FILE *fp = fopen(FILE_NAME, "w");
 
-    Student *t=head;
-    while(t)
+    if(fp == NULL)
+        return;
+
+    Student *temp = head;
+
+    while(temp != NULL)
     {
-        fprintf(fp,"%s|%s|%s|%s|%s|%s\n",
-        t->course,t->branch,t->roll,t->erp,t->name,t->phone);
-        t=t->next;
+        fprintf(fp,
+                "%s|%s|%s|%s|%s|%s\n",
+                temp->course,
+                temp->branch,
+                temp->roll,
+                temp->erp,
+                temp->name,
+                temp->phone);
+
+        temp = temp->next;
     }
+
     fclose(fp);
 }
 
 void loadFromFile()
 {
-    FILE *fp=fopen(FILE_NAME,"r");
-    if(!fp) return;
+    FILE *fp = fopen(FILE_NAME, "r");
+
+    if(fp == NULL)
+        return;
 
     while(1)
     {
-        Student *n=(Student*)malloc(sizeof(Student));
+        Student *newNode =
+            (Student *)malloc(sizeof(Student));
 
-        if(fscanf(fp,"%49[^|]|%49[^|]|%29[^|]|%29[^|]|%99[^|]|%19[^\n]\n",
-        n->course,n->branch,n->roll,n->erp,n->name,n->phone)!=6)
+        if(fscanf(fp,
+                  "%49[^|]|%49[^|]|%29[^|]|%29[^|]|%99[^|]|%19[^\n]\n",
+                  newNode->course,
+                  newNode->branch,
+                  newNode->roll,
+                  newNode->erp,
+                  newNode->name,
+                  newNode->phone) != 6)
         {
-            free(n);
+            free(newNode);
             break;
         }
 
-        n->next=head;
-        head=n;
+        newNode->next = head;
+        head = newNode;
     }
+
     fclose(fp);
 }
 
-void selectCourseBranch(char course[], char branch[])
+void selectCourseBranch(char course[],
+                        char branch[])
 {
-    int c,b;
+    int courseChoice;
+    int branchChoice;
 
     while(1)
     {
         printf("\nSelect Course\n");
-        printf("1. B.Tech\n2. BCA\n3. BBA\n4. MBA\n5. MCA\n");
-        printf("Choice: ");
-        scanf("%d",&c);
+        printf("1. B.Tech\n");
+        printf("2. BCA\n");
+        printf("3. BBA\n");
+        printf("4. MBA\n");
+        printf("5. MCA\n");
 
-        if(c==1)
+        printf("Choice: ");
+        scanf("%d", &courseChoice);
+
+        if(courseChoice == 1)
         {
-            strcpy(course,"B.Tech");
+            strcpy(course, "B.Tech");
 
             while(1)
             {
                 printf("\nSelect Branch\n");
+
                 printf("1. CSE\n");
                 printf("2. CSE (AI & ML)\n");
                 printf("3. CSE (Data Science)\n");
@@ -125,214 +170,404 @@ void selectCourseBranch(char course[], char branch[])
                 printf("6. ECE\n");
                 printf("7. Mechanical\n");
                 printf("8. Civil\n");
-                printf("Choice: ");
-                scanf("%d",&b);
 
-                switch(b)
+                printf("Choice: ");
+                scanf("%d", &branchChoice);
+
+                switch(branchChoice)
                 {
-                    case 1:strcpy(branch,"CSE"); return;
-                    case 2:strcpy(branch,"CSE (AI & ML)"); return;
-                    case 3:strcpy(branch,"CSE (Data Science)"); return;
-                    case 4:strcpy(branch,"CSE (Cyber Security)"); return;
-                    case 5:strcpy(branch,"IT"); return;
-                    case 6:strcpy(branch,"ECE"); return;
-                    case 7:strcpy(branch,"Mechanical"); return;
-                    case 8:strcpy(branch,"Civil"); return;
-                    default: printf("Invalid Choice\n");
+                    case 1:
+                        strcpy(branch, "CSE");
+                        return;
+
+                    case 2:
+                        strcpy(branch, "CSE (AI & ML)");
+                        return;
+
+                    case 3:
+                        strcpy(branch, "CSE (Data Science)");
+                        return;
+
+                    case 4:
+                        strcpy(branch, "CSE (Cyber Security)");
+                        return;
+
+                    case 5:
+                        strcpy(branch, "IT");
+                        return;
+
+                    case 6:
+                        strcpy(branch, "ECE");
+                        return;
+
+                    case 7:
+                        strcpy(branch, "Mechanical");
+                        return;
+
+                    case 8:
+                        strcpy(branch, "Civil");
+                        return;
+
+                    default:
+                        printf("Invalid Choice\n");
                 }
             }
         }
-        else if(c==2){strcpy(course,"BCA"); strcpy(branch,"Computer Applications"); return;}
-        else if(c==3){strcpy(course,"BBA"); strcpy(branch,"Business Administration"); return;}
-        else if(c==4){strcpy(course,"MBA"); strcpy(branch,"Management"); return;}
-        else if(c==5){strcpy(course,"MCA"); strcpy(branch,"Computer Applications"); return;}
-        else printf("Invalid Choice\n");
+        else if(courseChoice == 2)
+        {
+            strcpy(course,
+                   "BCA");
+
+            strcpy(branch,
+                   "Computer Applications");
+
+            return;
+        }
+        else if(courseChoice == 3)
+        {
+            strcpy(course,
+                   "BBA");
+
+            strcpy(branch,
+                   "Business Administration");
+
+            return;
+        }
+        else if(courseChoice == 4)
+        {
+            strcpy(course,
+                   "MBA");
+
+            strcpy(branch,
+                   "Management");
+
+            return;
+        }
+        else if(courseChoice == 5)
+        {
+            strcpy(course,
+                   "MCA");
+
+            strcpy(branch,
+                   "Computer Applications");
+
+            return;
+        }
+        else
+        {
+            printf("Invalid Choice\n");
+        }
     }
 }
 
 void addStudent()
 {
-    Student *n=(Student*)malloc(sizeof(Student));
+    Student *newNode =
+        (Student *)malloc(sizeof(Student));
 
-    selectCourseBranch(n->course,n->branch);
+    selectCourseBranch(
+        newNode->course,
+        newNode->branch);
+
     clearBuffer();
 
-    do{
+    do
+    {
         printf("University Roll No: ");
-        fgets(n->roll,sizeof(n->roll),stdin);
-        n->roll[strcspn(n->roll,"\n")]=0;
-        if(rollExists(n->roll))
-            printf("Roll Number already exists!\n");
-    }while(rollExists(n->roll));
 
-    do{
+        fgets(newNode->roll,
+              sizeof(newNode->roll),
+              stdin);
+
+        newNode->roll[
+            strcspn(newNode->roll, "\n")] = '\0';
+
+        if(rollExists(newNode->roll))
+        {
+            printf("Roll Number already exists!\n");
+        }
+
+    } while(rollExists(newNode->roll));
+
+    do
+    {
         printf("ERP ID: ");
-        fgets(n->erp,sizeof(n->erp),stdin);
-        n->erp[strcspn(n->erp,"\n")]=0;
-        if(erpExists(n->erp))
+
+        fgets(newNode->erp,
+              sizeof(newNode->erp),
+              stdin);
+
+        newNode->erp[
+            strcspn(newNode->erp, "\n")] = '\0';
+
+        if(erpExists(newNode->erp))
+        {
             printf("ERP ID already exists!\n");
-    }while(erpExists(n->erp));
+        }
+
+    } while(erpExists(newNode->erp));
 
     printf("Name: ");
-    fgets(n->name,sizeof(n->name),stdin);
-    n->name[strcspn(n->name,"\n")]=0;
+
+    fgets(newNode->name,
+          sizeof(newNode->name),
+          stdin);
+
+    newNode->name[
+        strcspn(newNode->name, "\n")] = '\0';
 
     printf("Phone Number: ");
-    fgets(n->phone,sizeof(n->phone),stdin);
-    n->phone[strcspn(n->phone,"\n")]=0;
 
-    n->next=head;
-    head=n;
+    fgets(newNode->phone,
+          sizeof(newNode->phone),
+          stdin);
+
+    newNode->phone[
+        strcspn(newNode->phone, "\n")] = '\0';
+
+    newNode->next = head;
+    head = newNode;
 
     saveToFile();
+
     printf("\nStudent Added Successfully.\n");
 }
 
 void displayStudents()
 {
-    Student *t=head;
+    Student *temp = head;
 
-    if(!t){ printf("\nNo Records Found.\n"); return; }
-
-    while(t)
+    if(temp == NULL)
     {
-        printf("\n-----------------------------\n");
-        printf("Course : %s\n",t->course);
-        printf("Branch : %s\n",t->branch);
-        printf("Roll No: %s\n",t->roll);
-        printf("ERP ID : %s\n",t->erp);
-        printf("Name   : %s\n",t->name);
-        printf("Phone  : %s\n",t->phone);
-        t=t->next;
+        printf("\nNo Records Found.\n");
+        return;
+    }
+
+    while(temp != NULL)
+    {
+        printf("\n+------------------------------------------------+\n");
+
+        printf("| Course : %-38s |\n",
+               temp->course);
+
+        printf("| Branch : %-38s |\n",
+               temp->branch);
+
+        printf("| Roll   : %-38s |\n",
+               temp->roll);
+
+        printf("| ERP ID : %-38s |\n",
+               temp->erp);
+
+        printf("| Name   : %-38s |\n",
+               temp->name);
+
+        printf("| Phone  : %-38s |\n",
+               temp->phone);
+
+        printf("+------------------------------------------------+\n");
+
+        temp = temp->next;
     }
 }
 
 void searchStudent()
 {
     char roll[30];
+
     clearBuffer();
 
-    printf("Enter Roll No: ");
-    fgets(roll,sizeof(roll),stdin);
-    roll[strcspn(roll,"\n")]=0;
+    printf("Enter Roll Number: ");
 
-    Student *t=head;
+    fgets(roll,
+          sizeof(roll),
+          stdin);
 
-    while(t)
+    roll[strcspn(roll, "\n")] = '\0';
+
+    Student *temp = head;
+
+    while(temp != NULL)
     {
-        if(strcmp(t->roll,roll)==0)
+        if(strcmp(temp->roll, roll) == 0)
         {
-            printf("\nFound!\n");
-            printf("Name: %s\n",t->name);
-            printf("Course: %s\n",t->course);
-            printf("Branch: %s\n",t->branch);
-            printf("ERP ID: %s\n",t->erp);
-            printf("Phone: %s\n",t->phone);
+            printf("\nStudent Found!\n");
+
+            printf("Course : %s\n",
+                   temp->course);
+
+            printf("Branch : %s\n",
+                   temp->branch);
+
+            printf("Roll No: %s\n",
+                   temp->roll);
+
+            printf("ERP ID : %s\n",
+                   temp->erp);
+
+            printf("Name   : %s\n",
+                   temp->name);
+
+            printf("Phone  : %s\n",
+                   temp->phone);
+
             return;
         }
-        t=t->next;
+
+        temp = temp->next;
     }
 
-    printf("Student Not Found.\n");
-}
-
-void deleteStudent()
-{
-    char roll[30];
-    clearBuffer();
-
-    printf("Enter Roll No: ");
-    fgets(roll,sizeof(roll),stdin);
-    roll[strcspn(roll,"\n")]=0;
-
-    Student *t=head,*p=NULL;
-
-    while(t)
-    {
-        if(strcmp(t->roll,roll)==0)
-        {
-            if(p==NULL) head=t->next;
-            else p->next=t->next;
-
-            free(t);
-            saveToFile();
-            printf("Deleted Successfully.\n");
-            return;
-        }
-        p=t;
-        t=t->next;
-    }
-
-    printf("Student Not Found.\n");
+    printf("\nStudent Not Found.\n");
 }
 
 void updateStudent()
 {
     char roll[30];
+
     clearBuffer();
 
-    printf("Enter Roll No: ");
-    fgets(roll,sizeof(roll),stdin);
-    roll[strcspn(roll,"\n")]=0;
+    printf("Enter Roll Number: ");
 
-    Student *t=head;
+    fgets(roll,
+          sizeof(roll),
+          stdin);
 
-    while(t)
+    roll[strcspn(roll, "\n")] = '\0';
+
+    Student *temp = head;
+
+    while(temp != NULL)
     {
-        if(strcmp(t->roll,roll)==0)
+        if(strcmp(temp->roll, roll) == 0)
         {
-            selectCourseBranch(t->course,t->branch);
+            printf("\nUpdating Student...\n");
+
+            selectCourseBranch(
+                temp->course,
+                temp->branch);
+
             clearBuffer();
 
-            printf("Name: ");
-            fgets(t->name,sizeof(t->name),stdin);
-            t->name[strcspn(t->name,"\n")]=0;
+            printf("Enter New Name: ");
 
-            printf("Phone: ");
-            fgets(t->phone,sizeof(t->phone),stdin);
-            t->phone[strcspn(t->phone,"\n")]=0;
+            fgets(temp->name,
+                  sizeof(temp->name),
+                  stdin);
+
+            temp->name[
+                strcspn(temp->name, "\n")] = '\0';
+
+            printf("Enter New Phone Number: ");
+
+            fgets(temp->phone,
+                  sizeof(temp->phone),
+                  stdin);
+
+            temp->phone[
+                strcspn(temp->phone, "\n")] = '\0';
 
             saveToFile();
-            printf("Updated Successfully.\n");
+
+            printf("\nRecord Updated Successfully.\n");
             return;
         }
-        t=t->next;
+
+        temp = temp->next;
     }
 
-    printf("Student Not Found.\n");
+    printf("\nStudent Not Found.\n");
+}
+
+void deleteStudent()
+{
+    char roll[30];
+
+    clearBuffer();
+
+    printf("Enter Roll Number: ");
+
+    fgets(roll,
+          sizeof(roll),
+          stdin);
+
+    roll[strcspn(roll, "\n")] = '\0';
+
+    Student *temp = head;
+    Student *prev = NULL;
+
+    while(temp != NULL)
+    {
+        if(strcmp(temp->roll, roll) == 0)
+        {
+            if(prev == NULL)
+            {
+                head = temp->next;
+            }
+            else
+            {
+                prev->next = temp->next;
+            }
+
+            free(temp);
+
+            saveToFile();
+
+            printf("\nStudent Deleted Successfully.\n");
+            return;
+        }
+
+        prev = temp;
+        temp = temp->next;
+    }
+
+    printf("\nStudent Not Found.\n");
 }
 
 void sortStudents()
 {
-    Student *i,*j;
+    Student *i;
+    Student *j;
 
-    for(i=head;i;i=i->next)
+    char tempCourse[50];
+    char tempBranch[50];
+    char tempRoll[30];
+    char tempERP[30];
+    char tempName[100];
+    char tempPhone[20];
+
+    for(i = head; i != NULL; i = i->next)
     {
-        for(j=i->next;j;j=j->next)
+        for(j = i->next; j != NULL; j = j->next)
         {
-            if(strcmp(i->roll,j->roll)>0)
+            if(strcmp(i->roll, j->roll) > 0)
             {
-                Student temp=*i;
+                strcpy(tempCourse, i->course);
+                strcpy(tempBranch, i->branch);
+                strcpy(tempRoll, i->roll);
+                strcpy(tempERP, i->erp);
+                strcpy(tempName, i->name);
+                strcpy(tempPhone, i->phone);
 
-                strcpy(i->course,j->course);
-                strcpy(i->branch,j->branch);
-                strcpy(i->roll,j->roll);
-                strcpy(i->erp,j->erp);
-                strcpy(i->name,j->name);
-                strcpy(i->phone,j->phone);
+                strcpy(i->course, j->course);
+                strcpy(i->branch, j->branch);
+                strcpy(i->roll, j->roll);
+                strcpy(i->erp, j->erp);
+                strcpy(i->name, j->name);
+                strcpy(i->phone, j->phone);
 
-                strcpy(j->course,temp.course);
-                strcpy(j->branch,temp.branch);
-                strcpy(j->roll,temp.roll);
-                strcpy(j->erp,temp.erp);
-                strcpy(j->name,temp.name);
-                strcpy(j->phone,temp.phone);
+                strcpy(j->course, tempCourse);
+                strcpy(j->branch, tempBranch);
+                strcpy(j->roll, tempRoll);
+                strcpy(j->erp, tempERP);
+                strcpy(j->name, tempName);
+                strcpy(j->phone, tempPhone);
             }
         }
     }
 
     saveToFile();
-    printf("Sorted Successfully.\n");
+
+    printf("\nRecords Sorted Successfully.\n");
 }
 
 void deleteAllRecords()
@@ -343,12 +578,13 @@ void deleteAllRecords()
     {
         temp = head;
         head = head->next;
+
         free(temp);
     }
 
     remove(FILE_NAME);
 
-    printf("\nAll records deleted successfully.\n");
+    printf("\nAll Records Deleted Successfully.\n");
 }
 
 int main()
@@ -360,29 +596,66 @@ int main()
     while(1)
     {
         banner();
+
         printf("1. Add Student\n");
         printf("2. Display Students\n");
         printf("3. Search Student\n");
         printf("4. Update Student\n");
         printf("5. Delete Student\n");
         printf("6. Sort Students\n");
-        printf("7. Delete all records\n");
+        printf("7. Delete All Records\n");
         printf("8. Exit\n");
-        printf("Enter Choice: ");
 
-        scanf("%d",&choice);
+        printf("\nEnter Choice: ");
+
+        scanf("%d", &choice);
 
         switch(choice)
         {
-            case 1: addStudent(); break;
-            case 2: displayStudents(); break;
-            case 3: searchStudent(); break;
-            case 4: updateStudent(); break;
-            case 5: deleteStudent(); break;
-            case 6: sortStudents(); break;
-            case 7: deleteAllRecords(); break;
-            case 8: return 0;
-            default: printf("Invalid Choice\n");
+            case 1:
+                addStudent();
+                pauseScreen();
+                break;
+
+            case 2:
+                displayStudents();
+                pauseScreen();
+                break;
+
+            case 3:
+                searchStudent();
+                pauseScreen();
+                break;
+
+            case 4:
+                updateStudent();
+                pauseScreen();
+                break;
+
+            case 5:
+                deleteStudent();
+                pauseScreen();
+                break;
+
+            case 6:
+                sortStudents();
+                pauseScreen();
+                break;
+
+            case 7:
+                deleteAllRecords();
+                pauseScreen();
+                break;
+
+            case 8:
+                printf("\nExiting Program...\n");
+                return 0;
+
+            default:
+                printf("\nInvalid Choice!\n");
+                pauseScreen();
         }
     }
+
+    return 0;
 }
