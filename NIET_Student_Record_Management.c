@@ -351,13 +351,6 @@ void deleteAllRecords()
     printf("\nAll records deleted successfully.\n");
 }
 
-void pauseScreen()
-{
-    printf("\nPress Enter to Continue...");
-    getchar();
-    getchar();
-}
-
 int main()
 {
     int choice;
